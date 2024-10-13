@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import { FollowerService } from "./following.service";
 import AppError from "../../error/AppError";
 import httpStatus from 'http-status-codes';
+import Follower from "./following.model";
 // Follow a user
 export const followUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const { followerId, followingId } = req.body;
@@ -68,3 +69,15 @@ export const getFollowing = catchAsync(async (req: Request, res: Response, next:
     data: following,
   });
 });
+
+// Controller for checking follow status
+export const checkFollowStatus = catchAsync(async (req, res, next) => {
+    const { followerId, followingId } = req.params;
+    
+    try {
+      const isFollowing = await Follower.exists({ follower: followerId, following: followingId });
+      res.status(200).json({ isFollowing: !!isFollowing });
+    } catch (error) {
+      next(error);
+    }
+  });

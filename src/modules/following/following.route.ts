@@ -1,7 +1,7 @@
 
 
 import express from "express";
-import { followUser, getFollowers, getFollowing, unfollowUser } from "./following.controller";
+import { checkFollowStatus, followUser, getFollowers, getFollowing, unfollowUser } from "./following.controller";
 
 
 const router = express.Router();
@@ -17,5 +17,7 @@ router.get("/:userId", getFollowers);
 
 // Get users a user is following
 router.get("/following/:userId", getFollowing);
+
+router.get('/status/:followerId/:followingId', checkFollowStatus);
 
 export const FollowRoutes = router;
