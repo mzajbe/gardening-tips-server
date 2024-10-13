@@ -5,4 +5,6 @@ export const USER_ROLE = {
 
 } as const ;
 
+export const UserSearchableFields = ['name, email'];
+
 // type TUserRole = keyof typeof USER_ROLE;

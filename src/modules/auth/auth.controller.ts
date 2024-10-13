@@ -4,26 +4,42 @@ import httpStatus from "http-status-codes";
 import { AuthServices } from "./auth.service";
 import config from "../../config";
 
+
+
+const signUpUser = catchAsync(async (req, res)=>{
+  const result = await AuthServices.signUpUser(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User registered successfully',
+    data: result,
+  });
+});
+
 const loginUser = catchAsync(async (req,res)=>{
 
     const result = await AuthServices.loginUser(req.body);
 
     const {refreshToken,accessToken} = result;
 
-    res.cookie('refreshToken',refreshToken,{
-        secure:config.NODE_ENV === 'production',
-        httpOnly:true,
-    })
+    // res.cookie('refreshToken',refreshToken,{
+    //     secure:config.NODE_ENV === 'production',
+    //     httpOnly:true,
+    // })
 
-    sendResponseLogin(res, {
-        success: true,
-        token:result.accessToken,
-        message: 'User is logged in successfully!',
-        statusCode:httpStatus.OK,
-        data:result.data,
-        // accessToken
-      });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'User is logged in successfully!',
+      data: {
+        accessToken,
+        refreshToken,
+      },
+    });
 });
+
+
 
 const refreshToken = catchAsync(async (req, res) => {
     const { refreshToken } = req.cookies;
@@ -38,6 +54,7 @@ const refreshToken = catchAsync(async (req, res) => {
   });
 
 export const AuthControllers = {
+  signUpUser,
     loginUser,
     refreshToken,
 }

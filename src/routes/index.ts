@@ -3,6 +3,7 @@ import { PostRoutes } from '../modules/posts/posts.route';
 import { UserRoutes } from '../modules/user/user.route';
 import { VoteRoutes } from '../modules/vote/vote.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
+import { FollowRoutes } from '../modules/following/following.route';
 
 
 
@@ -25,6 +26,10 @@ const moduleRoutes = [
   {
     path: '/votes',
     route:VoteRoutes ,
+  },
+  {
+    path: '/follow',
+    route:FollowRoutes ,
   },
   
   
