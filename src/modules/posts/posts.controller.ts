@@ -108,10 +108,73 @@ const getPostsByUser = catchAsync(async (req, res, next) => {
   });
 });
 
+
+const updatePost = catchAsync(async (req, res, next) => {
+  const postId = req.params.id;
+  const { userId, content, title } = req.body; // Adjust based on your post structure
+
+  // Find the post to ensure it belongs to the user
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    return next(new AppError(httpStatus.NOT_FOUND, "Post not found"));
+  }
+
+  // Check if the user making the request is the post author
+  if (post.author.toString() !== userId) {
+    return next(new AppError(httpStatus.UNAUTHORIZED, "You can only edit your own posts"));
+  }
+
+  // Update post content
+  post.content = content || post.content; // Update content only if provided
+  post.title = title || post.title; // Update title if provided
+
+  await post.save();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Post updated successfully",
+    data: post,
+  });
+});
+
+const deletePost = catchAsync(async (req, res, next) => {
+  const postId = req.params.id;
+  const { userId } = req.body;
+
+  // Find the post to ensure it belongs to the user
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    return next(new AppError(httpStatus.NOT_FOUND, "Post not found"));
+  }
+
+  // Check if the user making the request is the post author
+  if (post.author.toString() !== userId) {
+    return next(new AppError(httpStatus.UNAUTHORIZED, "You can only delete your own posts"));
+  }
+
+  // Delete the post
+  await Post.deleteOne({ _id: postId });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Post deleted successfully",
+    data:undefined
+  });
+});
+
+
+
+
   
   export const PostControllers = {
     createPost,
     getAllPost,
     getPost,
-    getPostsByUser
+    getPostsByUser,
+    updatePost,
+    deletePost
   };
