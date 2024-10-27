@@ -141,7 +141,7 @@ const updatePost = catchAsync(async (req, res, next) => {
 
 const deletePost = catchAsync(async (req, res, next) => {
   const postId = req.params.id;
-  const { userId } = req.body;
+  const userId = req.query.userId;  // Extract userId from query parameters
 
   // Find the post to ensure it belongs to the user
   const post = await Post.findById(postId);
@@ -162,7 +162,7 @@ const deletePost = catchAsync(async (req, res, next) => {
     success: true,
     statusCode: httpStatus.OK,
     message: "Post deleted successfully",
-    data:undefined
+    data: undefined,
   });
 });
 

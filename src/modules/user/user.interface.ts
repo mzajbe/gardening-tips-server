@@ -14,9 +14,20 @@ export type TUser = {
 };
 
 
-export interface UserModel extends Model<TUser> {
+// export interface UserModel extends Model<TUser> {
   
-  isUserExistsByEmail(email:string): Promise<TUser>;
+//   isUserExistsByEmail(email:string): Promise<TUser>;
   
-  isPasswordMatched(plainTestPassword : string,hashedPassword: string): Promise<boolean>;
+//   isPasswordMatched(plainTestPassword : string,hashedPassword: string): Promise<boolean>;
+// }
+export interface IUserModel extends Model<TUser> {
+  isUserExistsByEmail(id: string): Promise<TUser>;
+  isPasswordMatched(
+    plainTextPassword: string,
+    hashedPassword: string
+  ): Promise<boolean>;
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number
+  ): boolean;
 }
