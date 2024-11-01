@@ -7,43 +7,41 @@ import config from "../../config";
 
 const signUpUser = catchAsync(async (req, res) => {
   const result = await AuthServices.signUpUser(req.body);
-  // const { refreshToken, accessToken } = result;
+  const { refreshToken, accessToken } = result;
 
-  // res.cookie('refreshToken', refreshToken, {
-  //   secure: config.NODE_ENV === 'production',
-  //   httpOnly: true,
-  // });
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User registered in successfully!',
-    data:result,
-    // {
-    //   // accessToken,
-    //   refreshToken,
-    // },
+    data: {
+      accessToken,
+      refreshToken,
+    },
   });
 });
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUser(req.body);
-  // const { refreshToken, accessToken } = result;
+  const { refreshToken, accessToken } = result;
 
-  // res.cookie('refreshToken', refreshToken, {
-  //   secure: config.NODE_ENV === 'production',
-  //   httpOnly: true,
-  // });
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User logged in successfully!',
-    data:result,
-    // {
-    //   // accessToken,
-    //   refreshToken,
-    // },
+    data: {
+      accessToken,
+      refreshToken,
+    },
   });
 });
 

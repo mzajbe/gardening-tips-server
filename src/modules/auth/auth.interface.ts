@@ -5,10 +5,11 @@ export type TLoginUsr = {
     password: string;
 };
 
-export type TSignupUser = {
-    name: string;
-    email: string;
-    // mobileNumber: string;
-    password: string;
-    role: keyof typeof USER_ROLE;
-  };
+export type TSignUpUser = {
+    name:string;
+    email:string;
+    password:string;
+    profilePicture:string;
+    role:keyof typeof USER_ROLE;
+}
+

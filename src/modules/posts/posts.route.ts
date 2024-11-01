@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post(
   "/create",
-//   multerUpload.fields([{ name: "itemImages" }]),
+  multerUpload.fields([{ name: "itemImages" }]),
   PostControllers.createPost
 );
 router.get("/", PostControllers.getAllPost);

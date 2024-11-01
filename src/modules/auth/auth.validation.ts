@@ -22,7 +22,7 @@ export const signupValidationSchema = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().optional(),
-    role: z.enum(['USER', 'ADMIN']),
+    role: z.enum(['user', 'ADMIN']),
     // img: z.string().optional(),
   }),
 });

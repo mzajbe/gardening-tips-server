@@ -37,9 +37,32 @@ const findUserById = async (userId: string) => {
   return await User.findById(userId);
 };
 
+const updateUserProfile = async (userId: string, updatedData: Partial<TUser>) => {
+  // Only allow updates for name and profilePicture fields
+  const { name, profilePicture } = updatedData;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { ...(name && { name }), ...(profilePicture && { profilePicture }) },
+    { new: true } // Return the updated document
+  );
+
+  if (!updatedUser) {
+    throw new Error("User not found or update failed");
+  }
+
+  return {
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    profilePicture: updatedUser.profilePicture,
+  };
+};
+
 
 export const userService = {
   createUser,
   getAllUsersFromDB,
-  findUserById
+  findUserById,
+  updateUserProfile
 }

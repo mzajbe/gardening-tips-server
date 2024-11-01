@@ -29,9 +29,26 @@ const findUserById = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserProfile = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  const profilePicture = req.file?.path; // Get Cloudinary URL from the uploaded file
+
+  const updatedUser = await userService.updateUserProfile(id, { name, profilePicture });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile updated successfully",
+    data: updatedUser,
+  });
+});
+
 
 export const UserControllers = {
   // signUp,
   // getAllUsers,
-  findUserById
+  findUserById,
+  updateUserProfile
 }
