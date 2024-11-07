@@ -10,9 +10,8 @@ router.post(
   PostControllers.createPost
 );
 router.get("/", PostControllers.getAllPost);
-router.get("/:id",PostControllers.getPost);
-router.get("/user-posts/:id",PostControllers.getPostsByUser);
-
+router.get("/:id", PostControllers.getPost);
+router.get("/user-posts/:id", PostControllers.getPostsByUser);
 
 router.put("/update/:id", PostControllers.updatePost);
 router.delete("/delete/:id", PostControllers.deletePost);

@@ -45,10 +45,24 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
+// const verifyUser = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   await userService.verifyUserIfEligible(id);
+
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "User verification status updated if eligible",
+//     data:"",
+//   });
+// });
+
 
 export const UserControllers = {
   // signUp,
   // getAllUsers,
   findUserById,
-  updateUserProfile
+  updateUserProfile,
+  // verifyUser
 }

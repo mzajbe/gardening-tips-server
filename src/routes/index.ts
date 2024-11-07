@@ -5,6 +5,7 @@ import { VoteRoutes } from '../modules/vote/vote.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
 import { FollowRoutes } from '../modules/following/following.route';
 import { CommentRoutes } from '../modules/comment/comment.route';
+import { paymentRoute } from '../modules/payment/payment.route';
 
 
 
@@ -35,6 +36,10 @@ const moduleRoutes = [
   {
     path: '/comment',
     route:CommentRoutes ,
+  },
+  {
+    path: '/payment',
+    route:paymentRoute ,
   },
   
   

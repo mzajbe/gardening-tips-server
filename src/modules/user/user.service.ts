@@ -1,4 +1,6 @@
 import QueryBuilder from "../../builder/QueryBuilder";
+import Post from "../posts/posts.model";
+import VoteModel from "../vote/vote.model";
 import { UserSearchableFields } from "./user.constant";
 import { TUser } from "./user.interface";
 import User from "./user.model";
@@ -60,9 +62,11 @@ const updateUserProfile = async (userId: string, updatedData: Partial<TUser>) =>
 };
 
 
+
+
 export const userService = {
   createUser,
   getAllUsersFromDB,
   findUserById,
-  updateUserProfile
+  updateUserProfile,
 }

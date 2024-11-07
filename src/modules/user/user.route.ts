@@ -18,4 +18,6 @@ router.patch(
   UserControllers.updateUserProfile
 );
 
+// router.patch("/verify/:id", UserControllers.verifyUser);
+
 export const UserRoutes = router;
