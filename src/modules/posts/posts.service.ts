@@ -14,7 +14,7 @@ const createPostIntoDB = async (
 };
 
 const getAllPostFromDB = async () => {
-  const result = await Post.find().populate("author", "name");
+  const result = await Post.find().populate("author");
   return result;
 };
 
