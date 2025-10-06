@@ -20,6 +20,7 @@ app.use(
     origin: [
       "https://gardening-tips-platform-client-nine.vercel.app",
       "http://localhost:3000",
+      "http://localhost:5000",
     ],
     credentials: true,
   })
