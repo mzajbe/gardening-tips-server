@@ -21,10 +21,16 @@ app.use(
       "https://gardening-tips-platform-client-nine.vercel.app",
       "http://localhost:3000",
       "http://localhost:5000",
+      "http://localhost:5173",
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Handle preflight requests explicitly
+app.options("*", cors());
 
 // CORS options
 // const corsOptions: cors.CorsOptions = {
