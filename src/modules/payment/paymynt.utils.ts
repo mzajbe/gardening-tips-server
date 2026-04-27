@@ -1,7 +1,5 @@
 import axios from "axios";
-import dotenv from "dotenv";
-
-dotenv.config();
+import config from "../../config";
 
 // Function to generate unique transaction ID
 const generateTranId = () => {
@@ -11,14 +9,22 @@ const generateTranId = () => {
 };
 
 export const initialPayment = async (userId: string) => {
+  if (!config.payment_url || !config.store_id || !config.payment_signature_key) {
+    throw new Error("Payment environment variables are not configured correctly");
+  }
+
+  if (!config.backend_base_url || !config.frontend_base_url) {
+    throw new Error("BACKEND_BASE_URL and FRONTEND_BASE_URL must be configured");
+  }
+
   const tran_id = generateTranId();
-  const response = await axios.post(process.env.PAYMENT_URL!, {
-    store_id: process.env.STORE_ID,
-    signature_key: process.env.SIGNATURE_Key,
+  const response = await axios.post(config.payment_url, {
+    store_id: config.store_id,
+    signature_key: config.payment_signature_key,
     tran_id: tran_id,
-    success_url: `https://gardening-server.vercel.app/api/v1/payment/confirmation/${userId}`,
-    fail_url: "https://gardening-server.vercel.app/api/v1/payment/fail",
-    cancel_url: "https://gardening-tips-platform-client-nine.vercel.app/",
+    success_url: `${config.backend_base_url}/api/v1/payment/confirmation/${userId}`,
+    fail_url: `${config.backend_base_url}/api/v1/payment/fail`,
+    cancel_url: config.frontend_base_url,
     amount: "1.0",
     currency: "BDT",
     desc: "Merchant Registration Payment",
@@ -33,9 +39,8 @@ export const initialPayment = async (userId: string) => {
     cus_phone: "+8801704",
     type: "json",
   });
-  console.log(response);
-  if(response.data.result){
-    return response.data.payment_url
+  console.log(response.data);
+  if (response.data.result) {
+    return response.data.payment_url;
   }
-  
 };

@@ -4,6 +4,7 @@ import sendResponse from "../../utils/sendResponse";
 import { initialPayment } from "./paymynt.utils";
 import httpStatus from "http-status-codes";
 import { paymentServices } from "./payment.service";
+import config from "../../config";
 
 const paymentURL = catchAsync(async (req, res) => {
   const { id: userId } = req.params;
@@ -22,6 +23,7 @@ const confirmationController = async (req: Request, res: Response) => {
   try {
     const { id: userId } = req.params;
     await paymentServices.confirmationService(userId);
+    const homeUrl = config.frontend_base_url ?? "/";
     res.send(`  
       <!DOCTYPE html>  
       <html lang="en">  
@@ -70,7 +72,7 @@ const confirmationController = async (req: Request, res: Response) => {
           <div class="container">  
               <h1>Payment Successful!</h1>  
               <p>Your payment has been processed successfully. Thank you for your order.</p>  
-              <button class="home-button" onclick="window.location.href='https://gardening-tips-platform-client-nine.vercel.app'">Go to Home</button>  
+              <button class="home-button" onclick="window.location.href='${homeUrl}'">Go to Home</button>  
           </div>  
       </body>  
       </html>  

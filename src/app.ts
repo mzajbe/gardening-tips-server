@@ -1,66 +1,65 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import globalErrorHandler from "./middlewares/globalErrorhandler";
 import notFound from "./middlewares/notFound";
 import router from "./routes";
 import cookieParser from "cookie-parser";
+import config from "./config";
+import connectDB from "./config/db";
 
 const app = express();
 
-// Define allowed origins
-// const allowedOrigins = [
-//   "https://gardening-tips-platform-client-nine.vercel.app",
-//   "http://localhost:5173",
-//   "http://localhost:3000",
-
-// ];
-
-app.use(
-  cors({
-    origin: [
-      "https://gardening-tips-platform-client-nine.vercel.app",
-      "http://localhost:3000",
-      "http://localhost:5000",
-      "http://localhost:5173",
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+const allowedOrigins = new Set(
+  [
+    config.frontend_base_url,
+    config.client_origin,
+    ...config.client_origins,
+    "https://gardening-tips-platform-client-nine.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5000",
+    "http://localhost:5173",
+  ].filter(Boolean),
 );
 
-// Handle preflight requests explicitly
-app.options("*", cors());
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin)) {
+      callback(null, true);
+      return;
+    }
 
-// CORS options
-// const corsOptions: cors.CorsOptions = {
-//   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true); // Allow the requested origin
-//     } else {
-//       callback(new Error("Not allowed by CORS")); // Reject the origin
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+const ensureDatabaseConnection = async (
+  _req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Parsers
 app.use(express.json());
 app.use(cookieParser());
 
-// Use CORS middleware
-// app.use(cors(corsOptions));
-
-// Handle preflight requests (OPTIONS) - this is automatically handled, but for clarity
-// app.options("*", cors(corsOptions));
-
 // Application routes
-app.use("/api/v1", router);
+app.use("/api/v1", ensureDatabaseConnection, router);
 
 // Test route
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.send("gardening server");
 });
 

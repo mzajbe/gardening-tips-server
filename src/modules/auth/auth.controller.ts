@@ -1,22 +1,23 @@
 import catchAsync from "../../utils/catchAsync";
-import  sendResponse, { sendResponseLogin } from "../../utils/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { AuthServices } from "./auth.service";
 import config from "../../config";
+import { CookieOptions } from "express";
+
+const refreshCookieOptions: CookieOptions = {
+  secure: config.NODE_ENV === "production",
+  httpOnly: true,
+  sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 60 * 24 * 60 * 60 * 1000,
+};
 
 
 const signUpUser = catchAsync(async (req, res) => {
   const result = await AuthServices.signUpUser(req.body);
   const { refreshToken, accessToken } = result;
 
-  
-  
-
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 60 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -33,13 +34,7 @@ const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUser(req.body);
   const { refreshToken, accessToken } = result;
 
-  
-
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 60 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
