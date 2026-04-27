@@ -7,6 +7,7 @@ import { FollowRoutes } from "../modules/following/following.route";
 import { CommentRoutes } from "../modules/comment/comment.route";
 import { paymentRoute } from "../modules/payment/payment.route";
 import { FavouriteRoutes } from "../modules/favourite/favourite.route";
+import { GroupRoutes } from "../modules/group/group.route";
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: "/fav",
     route: FavouriteRoutes,
+  },
+  {
+    path: "/groups",
+    route: GroupRoutes,
   },
 ];
 
