@@ -9,11 +9,7 @@ import httpStatus from 'http-status-codes';
 
 
 const createPost = catchAsync(async (req, res) => {
-  if (!req.files) {
-    throw new AppError(400, 'Please upload an image');
-  }
-
-    const result = await PostService.createPostIntoDB(req.body,req.files as TImageFiles);
+    const result = await PostService.createPostIntoDB(req.body, req.files as TImageFiles | undefined);
   
     sendResponse(res, {
       statusCode: httpStatus.OK,

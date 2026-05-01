@@ -4,10 +4,13 @@ import Post from "./posts.model";
 
 const createPostIntoDB = async (
   payload: Omit<TPost, "createdAt" | "updatedAt" | "isDeleted">,
-  images: TImageFiles
+  images?: TImageFiles
 ) => {
-  const { itemImages } = images;
-  payload.images = itemImages.map((image) => image.path);
+  if (images && images.itemImages) {
+    payload.images = images.itemImages.map((image) => image.path);
+  } else {
+    payload.images = [];
+  }
 
   const result = await Post.create(payload);
   return result;

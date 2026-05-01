@@ -5,7 +5,6 @@ import { TPost } from './posts.interface';
 const postSchema = new Schema<TPost>({
   title: {
     type: String,
-    required: true,
     trim: true,
   },
   content: {
