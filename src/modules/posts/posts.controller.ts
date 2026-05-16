@@ -92,7 +92,7 @@ const getPostsByUser = catchAsync(async (req, res, next) => {
   // Log the posts to see if they are retrieved correctly
   console.log("Posts found:", posts);
 
-  if (!posts || posts.length === 0) {
+  if (!posts) {
     return next(new AppError(httpStatus.NOT_FOUND, "No posts found"));
   }
 
