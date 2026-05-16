@@ -58,7 +58,10 @@ const createPost = catchAsync(async (req, res) => {
 
 
 const getAllPost = catchAsync(async(req,res)=>{
-  const result = await PostService.getAllPostFromDB();
+  const page  = Math.max(1, Number(req.query.page)  || 1);
+  const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 8));
+
+  const result = await PostService.getAllPostFromDB(page, limit);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

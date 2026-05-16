@@ -16,9 +16,19 @@ const createPostIntoDB = async (
   return result;
 };
 
-const getAllPostFromDB = async () => {
-  const result = await Post.find().populate("author");
-  return result;
+const getAllPostFromDB = async (page = 1, limit = 8) => {
+  const skip = (page - 1) * limit;
+
+  const [posts, total] = await Promise.all([
+    Post.find()
+      .populate("author")
+      .sort({ createdAt: -1 }) // newest first
+      .skip(skip)
+      .limit(limit),
+    Post.countDocuments({ isDeleted: false }),
+  ]);
+
+  return { posts, total, page, limit };
 };
 
 const getPostFromDB = async (itemId: string) => {
