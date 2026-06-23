@@ -22,13 +22,13 @@ export const signupValidationSchema = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().optional(),
-    role: z.enum(['user', 'ADMIN']),
+    role: z.enum(['user', 'admin']),
     // img: z.string().optional(),
   }),
 });
 
 export const AuthValidation = {
   signupValidationSchema,
-    loginValidationSchema,
-    refreshTokenValidationSchema
+  loginValidationSchema,
+  refreshTokenValidationSchema,
 };

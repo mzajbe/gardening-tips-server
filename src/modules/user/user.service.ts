@@ -1,26 +1,21 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import Post from "../posts/posts.model";
-import VoteModel from "../vote/vote.model";
 import { UserSearchableFields } from "./user.constant";
 import { TUser } from "./user.interface";
 import User from "./user.model";
 
+const createUser = async (userData: TUser) => {
+  const role = userData.role || "user";
 
-const createUser = async( userData : TUser) =>{
-  
-  //Ensure the role is set to 'user' by default
-  const role = userData.role || 'user';
+  const newUser = await User.create({ ...userData, role });
 
-  const newUser = await User.create({...userData,role});
-  
-  return{
-    _id:newUser._id,
-    name:newUser.name,
-    email:newUser.email,
-    role:newUser.role,
+  return {
+    _id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+    role: newUser.role,
   };
 };
-
 
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   const users = new QueryBuilder(User.find(), query)
@@ -39,14 +34,16 @@ const findUserById = async (userId: string) => {
   return await User.findById(userId);
 };
 
-const updateUserProfile = async (userId: string, updatedData: Partial<TUser>) => {
-  // Only allow updates for name and profilePicture fields
+const updateUserProfile = async (
+  userId: string,
+  updatedData: Partial<TUser>
+) => {
   const { name, profilePicture } = updatedData;
 
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { ...(name && { name }), ...(profilePicture && { profilePicture }) },
-    { new: true } // Return the updated document
+    { new: true }
   );
 
   if (!updatedUser) {
@@ -61,12 +58,37 @@ const updateUserProfile = async (userId: string, updatedData: Partial<TUser>) =>
   };
 };
 
+const getAdminOverview = async () => {
+  const startOfToday = new Date();
 
+  startOfToday.setHours(0, 0, 0, 0);
 
+  const startOfTomorrow = new Date(startOfToday);
+
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  const [totalUsers, totalPosts, todaySignups] = await Promise.all([
+    User.countDocuments(),
+    Post.countDocuments({ isDeleted: false }),
+    User.countDocuments({
+      createdAt: {
+        $gte: startOfToday,
+        $lt: startOfTomorrow,
+      },
+    }),
+  ]);
+
+  return {
+    totalUsers,
+    totalPosts,
+    todaySignups,
+  };
+};
 
 export const userService = {
   createUser,
   getAllUsersFromDB,
   findUserById,
   updateUserProfile,
-}
+  getAdminOverview,
+};

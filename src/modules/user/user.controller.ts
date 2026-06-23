@@ -1,21 +1,19 @@
-import { NextFunction, Request, Response } from "express";
-import { userValidationSchema } from "./user.validation";
-import { userService } from "./user.service";
-import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
+
 import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { userService } from "./user.service";
 
-// const getAllUsers = catchAsync(async (req, res) => {
-//   const result = await userService.getAllUsersFromDB(req.query);
+const getAdminOverview = catchAsync(async (_req, res) => {
+  const result = await userService.getAdminOverview();
 
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Users are retrieved succesfully',
-//     meta: result.meta,
-//     data: result.data,
-//   });
-// });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin overview retrieved successfully",
+    data: result,
+  });
+});
 
 const findUserById = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -24,7 +22,7 @@ const findUserById = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User is retrieved succesfully',
+    message: "User is retrieved succesfully",
     data: result,
   });
 });
@@ -33,9 +31,12 @@ const updateUserProfile = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  const profilePicture = req.file?.path; // Get Cloudinary URL from the uploaded file
+  const profilePicture = req.file?.path;
 
-  const updatedUser = await userService.updateUserProfile(id, { name, profilePicture });
+  const updatedUser = await userService.updateUserProfile(id, {
+    name,
+    profilePicture,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -45,24 +46,8 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
-// const verifyUser = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   await userService.verifyUserIfEligible(id);
-
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: "User verification status updated if eligible",
-//     data:"",
-//   });
-// });
-
-
 export const UserControllers = {
-  // signUp,
-  // getAllUsers,
+  getAdminOverview,
   findUserById,
   updateUserProfile,
-  // verifyUser
-}
+};
