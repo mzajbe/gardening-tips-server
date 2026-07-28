@@ -12,8 +12,9 @@ const createGroup = async (payload: { name: string; description: string; admin: 
 
 const getAllGroups = async () => {
   const result = await Group.find()
-    .populate('admin', 'name email profilePicture')
-    .populate('members', 'name email profilePicture');
+    .select('name description coverImage admin members')
+    .populate('admin', 'name profilePicture')
+    .lean();
   return result;
 };
 
@@ -105,3 +106,4 @@ export const GroupService = {
   leaveGroup,
   deleteGroup,
 };
+

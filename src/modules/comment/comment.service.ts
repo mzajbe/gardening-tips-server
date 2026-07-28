@@ -7,13 +7,9 @@ import CommentModel from "./comment.model";
  * Create a new comment for a post
  */
 const createComment = async (postId: string, userId: string, content: string): Promise<TComment> => {
-
- 
-    
   const comment = await CommentModel.create({ postId, userId, content });
-  
-  
-  return comment;
+  const populatedComment = await comment.populate("userId");
+  return populatedComment;
 };
 
 /**
