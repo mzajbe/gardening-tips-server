@@ -18,9 +18,15 @@ router.post(
 );
 
 router.post(
+    '/google-login',
+    validateRequest(AuthValidation.googleLoginValidationSchema),
+    AuthControllers.googleLogin,
+);
+
+router.post(
     '/refresh-token',
     validateRequest(AuthValidation.refreshTokenValidationSchema),
     AuthControllers.refreshToken,
-)
+);
 
 export const AuthRoutes = router;

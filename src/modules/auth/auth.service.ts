@@ -1,6 +1,6 @@
 import bcryptJs from "bcryptjs";
 
-import { TLoginUsr, TSignUpUser } from "./auth.interface";
+import { TGoogleLoginUser, TLoginUsr, TSignUpUser } from "./auth.interface";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status-codes";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -94,6 +94,45 @@ const loginUser = async (payload: TLoginUsr) => {
   };
 };
 
+const googleLogin = async (payload: TGoogleLoginUser) => {
+  let user = await User.isUserExistsByEmail(payload?.email);
+
+  if (!user) {
+    user = await User.create({
+      name: payload.name,
+      email: payload.email,
+      profilePicture:
+        payload.profilePicture ||
+        "https://i.postimg.cc/KcBGjPS7/profile-picture.webp",
+      role: USER_ROLE.user,
+    });
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
@@ -126,5 +165,6 @@ const refreshToken = async (token: string) => {
 export const AuthServices = {
   signUpUser,
   loginUser,
+  googleLogin,
   refreshToken,
 };

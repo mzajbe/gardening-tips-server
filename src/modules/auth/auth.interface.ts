@@ -12,3 +12,9 @@ export type TSignUpUser = {
   profilePicture: string;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
 };
+
+export type TGoogleLoginUser = {
+  name: string;
+  email: string;
+  profilePicture?: string;
+};

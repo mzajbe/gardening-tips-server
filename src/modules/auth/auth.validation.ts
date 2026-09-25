@@ -27,8 +27,17 @@ export const signupValidationSchema = z.object({
   }),
 });
 
+const googleLoginValidationSchema = z.object({
+  body: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    profilePicture: z.string().optional(),
+  }),
+});
+
 export const AuthValidation = {
   signupValidationSchema,
   loginValidationSchema,
+  googleLoginValidationSchema,
   refreshTokenValidationSchema,
 };
