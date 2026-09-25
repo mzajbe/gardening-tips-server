@@ -6,7 +6,7 @@ Backend service for the Cosmos gardening platform. This API handles authenticati
 
 - Runtime: Node.js + Express + TypeScript
 - Database: MongoDB via Mongoose
-- Auth: JWT access/refresh tokens with refresh token cookie support
+- Auth: JWT access/refresh tokens + NextAuth Google OAuth integration
 - Uploads: `multer` + Cloudinary
 - Validation: `zod`
 - Payments: external payment gateway callback flow
@@ -23,7 +23,7 @@ src/
   routes/                 top-level module route registration
   middlewares/            auth, validation, error handling, 404 handling
   modules/
-    auth/                 signup, login, refresh-token
+    auth/                 signup, login, google-login, refresh-token
     user/                 profile read/update
     posts/                create/read/update/delete posts
     comment/              post comments
@@ -41,6 +41,7 @@ src/
 ### Authentication
 
 - Email/password signup and login
+- Google OAuth 2.0 single sign-on & auto-provisioning (`/auth/google-login`)
 - JWT access token generation
 - JWT refresh token generation
 - Refresh token stored in an HTTP-only cookie
@@ -79,6 +80,28 @@ src/
 - Uses backend success/fail callbacks
 - Marks a user as premium after successful confirmation
 - Redirects users back to the frontend after completion
+
+## Google OAuth Integration Flow
+
+The backend supports seamless Google Sign-In integrated with NextAuth on the client:
+
+```text
+[ User ] -> Click "Login with Google"
+  └─► [ Frontend (NextAuth) ]
+        ├─► Obtains profile (name, email, picture) from Google OAuth 2.0
+        └─► POST /api/v1/auth/google-login { name, email, profilePicture }
+              └─► [ Backend (gardening-server) ]
+                    ├─► Validate request using `googleLoginValidationSchema`
+                    ├─► Check if user exists by email (`User.isUserExistsByEmail`)
+                    │     ├─► If NOT found: Auto-creates new User in MongoDB (role: "user", no password required)
+                    │     └─► If FOUND: Retrieves existing User record
+                    ├─► Generate JWT `accessToken` & `refreshToken`
+                    └─► Set `refreshToken` HTTP-only cookie & return response
+```
+
+### Passwordless User Model Safety
+* In `User` Mongoose schema, password is optional (`password?: string`).
+* Mongoose `pre('save')` middleware checks `if (user.password && user.isModified('password'))` before attempting `bcrypt.hash`, ensuring Google-authenticated users are saved cleanly without password errors.
 
 ## Request Flow
 
@@ -148,8 +171,9 @@ The compiled entry point is configured as `dist/server.js`.
 
 | Method | Path | Description |
 | --- | --- | --- |
-| `POST` | `/auth/signup` | Register a new user. |
-| `POST` | `/auth/login` | Log in and return access/refresh tokens. |
+| `POST` | `/auth/signup` | Register a new user with email and password. |
+| `POST` | `/auth/login` | Log in with email/password and return access/refresh tokens. |
+| `POST` | `/auth/google-login` | Authenticate or auto-register Google OAuth user and return access/refresh tokens. |
 | `POST` | `/auth/refresh-token` | Exchange refresh token cookie for a new access token. |
 
 ### Users
@@ -228,7 +252,8 @@ The compiled entry point is configured as `dist/server.js`.
 ## Authentication Notes
 
 - Access tokens are returned in the JSON response body.
-- Refresh tokens are also set as cookies in the auth controller.
+- Refresh tokens are set as cookies (`refreshToken`) in the auth controllers.
+- Google OAuth auto-provisions accounts and returns standard access/refresh tokens.
 - The reusable auth middleware expects `Authorization: Bearer <token>`.
 - Some client code also sends raw cookies for route protection on the frontend.
 
